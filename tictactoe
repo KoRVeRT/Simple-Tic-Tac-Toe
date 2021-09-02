@@ -1,0 +1,113 @@
+package tictactoe;
+
+import java.util.Scanner;
+
+public class Main {
+    static int countSpace = 8;
+    static boolean xWin = false;
+    static boolean oWin = false;
+    static String gameTurn = "X";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String[][] grid = new String[3][3];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                grid[i][j] = "_";
+            }
+        }
+        printGrid(grid);
+        while (countSpace > -1) {
+            System.out.print("Enter the coordinates: ");
+            String coordinates = scanner.nextLine();
+            try {
+                String[] stringsArray = coordinates.trim().split("\\s+");
+                int oneNum = Integer.parseInt(stringsArray[0]);
+                int twoNum = Integer.parseInt(stringsArray[1]);
+                if ((oneNum > 3 || twoNum > 3) || (oneNum < 1 || twoNum < 1)) {
+                    System.out.println("Coordinates should be from 1 to 3!");
+                    continue;
+                }
+                oneNum--;
+                twoNum--;
+                String element = grid[oneNum][twoNum];
+                if (element.equalsIgnoreCase("_")) {
+                    grid[oneNum][twoNum] = gameTurn;
+                    gameTurn = gameTurn.equalsIgnoreCase("X") ? "O" : "X";
+                    countSpace--;
+                    printGrid(grid);
+                    String result = checkGrid(grid);
+                    if (result.equalsIgnoreCase("Draw")) {
+                        System.out.println("Draw");
+                        break;
+                    } else if (result.equalsIgnoreCase("X wins")) {
+                        System.out.println("X wins");
+                        break;
+                    } else if (result.equalsIgnoreCase("O wins")) {
+                        System.out.println("O wins");
+                        break;
+                    }
+                } else {
+                    System.out.println("This cell is occupied! Choose another one!");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("You should enter numbers!");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Coordinates should be from 1 to 3!");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static String checkGrid(String[][] grid) {
+        String result;
+        for (int i = 0; i < grid.length; i++) {
+            int j = 1;
+            if (grid[i][j].equalsIgnoreCase(grid[i][j - 1]) && grid[i][j].equalsIgnoreCase(grid[i][j + 1])) {
+                checkWhoWin(grid[i][j]);
+            }
+            if (grid[j][i].equalsIgnoreCase(grid[j - 1][i]) && grid[j][i].equalsIgnoreCase(grid[j + 1][i])) {
+                checkWhoWin(grid[j][i]);
+            }
+        }
+        if (grid[1][1].equalsIgnoreCase(grid[0][0]) && grid[1][1].equalsIgnoreCase(grid[2][2])) {
+            checkWhoWin(grid[1][1]);
+        }
+        if (grid[1][1].equalsIgnoreCase(grid[0][2]) && grid[1][1].equalsIgnoreCase(grid[2][0])) {
+            checkWhoWin(grid[1][1]);
+        }
+        if (countSpace == -1 && !xWin && !oWin) {
+            result = "Draw";
+        } else if (xWin) {
+            result = "X wins";
+        } else if (oWin) {
+            result = "O wins";
+        } else {
+            result = "Game not finished";
+        }
+        return result;
+    }
+
+    public static void checkWhoWin(String element) {
+        if (!element.equalsIgnoreCase("_")) {
+            if (element.equalsIgnoreCase("X")) {
+                xWin = true;
+            }
+            if (element.equalsIgnoreCase("O")) {
+                oWin = true;
+            }
+        }
+    }
+
+    public static void printGrid(String[][] grid) {
+        System.out.println("---------");
+        for (String[] strings : grid) {
+            System.out.print("|");
+            for (int j = 0; j < grid.length; j++) {
+                System.out.print(" " + strings[j]);
+            }
+            System.out.println(" |");
+        }
+        System.out.println("---------");
+    }
+}
